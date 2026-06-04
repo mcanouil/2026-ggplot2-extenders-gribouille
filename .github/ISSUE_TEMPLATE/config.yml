@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Support
+    url: https://github.com/mcanouil/2026-ggplot2-extenders-gribouille/discussions
+    about: Please ask and answer questions here.

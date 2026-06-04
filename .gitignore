@@ -1,0 +1,7 @@
+.DS_Store
+*.log
+/.luarc.json
+/.quarto/
+/index_files/
+/index.html
+/assets/typst-render/

@@ -1,0 +1,18 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      quarto:
+        description: "Quarto version"
+        required: false
+        default: "release"
+        type: string
+
+jobs:
+  release:
+    uses: mcanouil/quarto-workflows/.github/workflows/release.yml@main
+    secrets: inherit
+    with:
+      quarto: ${{ inputs.quarto }}
+      gh-app-id: ${{ vars.APP_ID }}
