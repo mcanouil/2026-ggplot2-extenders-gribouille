@@ -14,6 +14,8 @@ format:
   comic-revealjs:
     theme:
       - ./assets/stylesheets/custom.scss
+    revealjs-plugins:
+      - a11y
 engine: markdown
 filters:
   - typst-render
@@ -139,7 +141,8 @@ The grammar runs inside the document engine itself.
 ::: {.caption .fragment data-fragment-index="4"}
 The vocabulary is stable.
 
-The question is never "what should the API look like?" — only "how do I wire it to a new backend?"
+The question is never "what should the API look like?"  
+— only "how do I wire it to a new backend?"
 :::
 
 ## "How do I wire this grammar to a new rendering backend?" {.speech}
@@ -163,13 +166,28 @@ A native Typst package.
 #import "@preview/gribouille:0.2.1": *
 ```
 
+::: {style="padding-top: 2em;"}
+:::
+
+::: {layout-ncol=2}
+
+::: {}
 - One line.
+
 - No R session.
+:::
+
+::: {}
 - No Python environment.
+
 - No recorded libraries.
+:::
+
+:::
 
 ::: {.caption}
-Available on the Typst Universe registry — the same channel as every other Typst package.
+Available on the Typst Universe registry \
+— the same channel as every other Typst package.
 :::
 
 ## data + aes() {.panel}
@@ -217,8 +235,8 @@ layers: (geom-point(size: 2pt),),
 ## + aes(colour = "species") {.panel}
 
 ```typst
-mapping: aes(x: "bill-len", y: "bill-dep", colour: "species"),
-scales: (scale-colour-discrete(palette: comic-colours),),
+mapping: aes(x: "bill-len", y: "bill-dep", fill: "species"),
+scales: (scale-fill-discrete(palette: comic-colours),),
 ```
 
 ```{typst}
@@ -229,15 +247,15 @@ scales: (scale-colour-discrete(palette: comic-colours),),
 //| alt: "Scatter plot of bill length vs bill depth coloured by species: Adelie in red, Chinstrap in blue, Gentoo in yellow, with a legend."
 #plot(
   data: penguins,
-  mapping: aes(x: "bill-len", y: "bill-dep", colour: "species"),
-  layers: (geom-point(size: 2pt),),
+  mapping: aes(x: "bill-len", y: "bill-dep", fill: "species"),
+  layers: (geom-point(size: 2pt, colour: black, stroke: 0.5pt),),
   scales: (
-    scale-colour-discrete(
+    scale-fill-discrete(
       limits: ("Adelie", "Chinstrap", "Gentoo"),
       palette: comic-colours,
     ),
   ),
-  labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)", colour: "Species"),
+  labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)", fill: "Species"),
   theme: theme-comic(),
   width: auto,
   height: auto,
@@ -258,16 +276,16 @@ facet: facet-wrap("species"),
 //| alt: "Scatter plot faceted by species into three panels — Adelie, Chinstrap, Gentoo — each framed with a bold border and a yellow strip header."
 #plot(
   data: penguins,
-  mapping: aes(x: "bill-len", y: "bill-dep", colour: "species"),
-  layers: (geom-point(size: 2pt),),
+  mapping: aes(x: "bill-len", y: "bill-dep", fill: "species"),
+  layers: (geom-point(size: 2pt, colour: black, stroke: 0.5pt),),
   facet: facet-wrap("species"),
   scales: (
-    scale-colour-discrete(
+    scale-fill-discrete(
       limits: ("Adelie", "Chinstrap", "Gentoo"),
       palette: comic-colours,
     ),
   ),
-  guides: guides(colour: guide-none()),
+  guides: guides(fill: none),
   labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)"),
   theme: theme-comic(),
   width: auto,
@@ -279,11 +297,11 @@ facet: facet-wrap("species"),
 
 ```typst
 compose(
-  plot(..., defer: true),
-  plot(..., defer: true),
+  defer(plot, ...)),
+  defer(plot, ...)),
   columns: 2,
   labs: labs(title: comic-title("Palmer Penguins: Morphometrics")),
-  collect: ("colour",),
+  collect: ("fill",),
 )
 ```
 
@@ -293,43 +311,38 @@ compose(
 //| alt: "Two-panel composition: bill length vs bill depth on the left, flipper length vs body mass on the right, with a shared species colour legend."
 //| width: 16cm
 //| height: 9cm
-#let _scale = scale-colour-discrete(
-  limits: ("Adelie", "Chinstrap", "Gentoo"),
-  palette: comic-colours,
-)
-#let p1 = plot(
-  data: penguins,
-  mapping: aes(x: "bill-len", y: "bill-dep", colour: "species"),
-  layers: (geom-point(size: 2pt),),
-  scales: (_scale,),
-  labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)", colour: "Species",),
-  theme: theme-comic(),
-  defer: true,
-)
-#let p2 = plot(
-  data: penguins,
-  mapping: aes(x: "flipper-len", y: "body-mass", colour: "species"),
-  layers: (geom-point(size: 2pt),),
-  scales: (_scale,),
-  labs: labs(x: "Flipper Length (mm)", y: "Body Mass (g)", colour: "Species",),
-  theme: theme-comic(),
-  defer: true,
-)
+#let my-plot(x, y, xlab, ylab) = {
+  defer(plot,
+    data: penguins,
+    mapping: aes(x: x, y: y, fill: "species"),
+    layers: (geom-point(size: 2pt, colour: black, stroke: 0.5pt),),
+    scales: (scale-fill-discrete(limits: ("Adelie", "Chinstrap", "Gentoo"), palette: comic-colours,),),
+    labs: labs(x: xlab, y: ylab, fill: "Species"),
+    theme: theme-comic()
+  )
+}
 #compose(
-  p1,
-  p2,
+  my-plot("bill-len", "bill-dep", "Bill Length (mm)", "Bill Depth (mm)",),
+  my-plot("flipper-len", "body-mass", "Flipper Length (mm)", "Body Mass (g)",),
   columns: 2,
   labs: labs(title: comic-title("Palmer Penguins: Morphometrics")),
-  collect: ("colour",),
+  collect: ("fill",),
   width: auto,
   height: auto,
 )
 ```
 
+::: {.caption .fragment}
+Contrary to ggplot2/R, Typst does not have lazy evaluation, so we need a way to get the plot specification without immediately rendering it.
+:::
+
 ## Full Typst Integration {.panel}
 
 ```typst
-annotate("typst", x: 48.0, y: 14.0, label: "_typical_ Chinstrap"),
+annotate(
+  "typst", ...,
+  label: [#box(fill: rgb("#fdf6e3"))[#text(size: 24pt)[_Typical_ Chinstrap]]]
+),
 annotate("vline", xintercept: 45.0, colour: comic-red, stroke: 1pt),
 ```
 
@@ -341,15 +354,15 @@ annotate("vline", xintercept: 45.0, colour: comic-red, stroke: 1pt),
 //| alt: "Scatter plot with a vertical red reference line at bill length 45 mm and an italic Typst annotation 'typical Chinstrap' placed near the cluster."
 #plot(
   data: penguins,
-  mapping: aes(x: "bill-len", y: "bill-dep", colour: "species"),
+  mapping: aes(x: "bill-len", y: "bill-dep", fill: "species"),
   layers: (
-    geom-point(size: 2pt),
+    geom-point(size: 2pt, colour: black, stroke: 0.5pt),
     annotate("vline", xintercept: 45.0, colour: comic-red, stroke: 1pt),
     annotate(
       "typst",
-      x: 48.0,
+      x: 35.0,
       y: 14.0,
-      label: "_typical_ Chinstrap",
+      label: [#box(fill: rgb("#fdf6e3"))[#text(size: 24pt)[_Typical_ Chinstrap]]],
       anchor: "west",
       size: 8pt,
     ),
@@ -370,7 +383,7 @@ annotate("vline", xintercept: 45.0, colour: comic-red, stroke: 1pt),
 ::: {.caption .fragment}
 The figure is Typst content.
 
-Annotate, caption, and cross-reference it like any other document element.
+[Annotate, caption, and cross-reference it like any other document element.]{.fragment}
 :::
 
 # Issue 04: No Big Dependencies {.section}
@@ -409,10 +422,10 @@ Bring a CSV. Nothing else.
 )
 #plot(
   data: df,
-  mapping: aes(x: "bill-len", y: "bill-dep", colour: "species"),
-  layers: (geom-point(size: 2pt),),
+  mapping: aes(x: "bill-len", y: "bill-dep", fill: "species"),
+  layers: (geom-point(size: 2pt, colour: black, stroke: 0.5pt),),
   scales: (
-    scale-colour-discrete(
+    scale-fill-discrete(
       limits: ("Adelie", "Chinstrap", "Gentoo"),
       palette: comic-colours,
     ),
@@ -420,7 +433,7 @@ Bring a CSV. Nothing else.
   labs: labs(
     x: "Bill Length (mm)",
     y: "Bill Depth (mm)",
-    colour: "Species",
+    fill: "Species",
     caption: "Source: penguins.csv",
   ),
   theme: theme-comic(),
@@ -433,21 +446,21 @@ Bring a CSV. Nothing else.
 No R. No Python. No recorded libraries.
 :::
 
-## The Pipeline {.panel}
+## The Quarto Pipeline {.panel}
 
 ::: {.narration}
-The same pipeline works in every Quarto output format.
+The same pipeline works in every Quarto format.
 :::
 
-| Step | What happens |
-|------|-------------|
-| Quarto | Reads `.qmd`, runs pre-Quarto filters. |
-| `typst-render` | Compiles `{typst}` blocks to PNG or SVG. |
-| Gribouille | Runs inside the Typst compiler — no extra runtime. |
-| Output | HTML, PDF, DOCX — choose your format. |
+| Step           | What happens                                       |
+| -------------- | -------------------------------------------------- |
+| Quarto         | Reads `.qmd`, runs pre-Quarto filters.             |
+| `typst-render` | Compiles `{typst}` blocks to PNG or SVG.           |
+| Gribouille     | Runs inside the Typst compiler — no extra runtime. |
+| Output         | HTML, PDF, DOCX — choose your format.              |
 
 ::: {.callout-tip collapse="false" title="Bonus"}
-The Typst compiler is a single fast binary.
+The Typst compiler is a single fast binary.  
 No package managers, no virtual environments, no version conflicts.
 :::
 
@@ -455,12 +468,12 @@ No package managers, no virtual environments, no version conflicts.
 
 In a native Typst document, `typst-render` injects the document's foreground and background colours into every compiled block.
 
-Figure axis text inherits the document font at document size.
+Figure axis text inherits the document font at document size.  
 The figure and the prose are compiled by the same engine.
 
 ::: {.callout-note collapse="false" title="In practice"}
-Switch your document font.
-Switch your document colour scheme.
+Switch your document font.  
+Switch your document colour scheme.  
 Your figures follow automatically.
 :::
 
@@ -476,7 +489,7 @@ The extension came first.
 
 **`quarto-typst-render`** came before Gribouille.
 
-It proved that a `{typst}` code block inside a Quarto document could compile to an image and land in any output format — HTML, PDF, DOCX.
+It proved that a `{typst}` code block inside a Quarto document could compile to an image and land in any output format.
 
 That proof of concept opened the question: what if the figures *were* Typst, not just Typst-compiled images of something else?
 
@@ -488,9 +501,9 @@ Gribouille is the answer.
 ## Timeline {.panel}
 
 ::: {.narration}
-One month planning. One month coding. ~200 agentic sessions.
-
-Human review at every step.
+One month planning/investigating.  
+One month coding (*ground initial work*).  
+Followed by ~200 agentic sessions.
 :::
 
 ::: {.columns style="font-size: 0.85em;"}
@@ -501,7 +514,6 @@ Human review at every step.
 - Grammar design decisions.
 - Theme API specification.
 - Geom and stat priority list.
-- LLM-assisted architecture review.
 - `cetz` as the drawing layer.
 
 :::
@@ -509,29 +521,18 @@ Human review at every step.
 
 **May 2026: Shipping**
 
+- LLM-assisted architecture.
 - ~200 agentic coding sessions.
 - Human review at every commit.
 - v0.1.0 released: May 20.
 - v0.2.0 released: June 1.
-- v0.2.1 released: June 3.
+- v0.3.0 released: June 24.
 
 :::
 :::
 
-{{< boom "~200" colour=red bottom=42% right=2% rotate=-8 size=1.4em fragment=burst >}}
-{{< bam "v0.2.1" colour=yellow bottom=0% right=-2% rotate=10 size=1.3em fragment=pop >}}
-
-## "LLMs are effective when..." {.speech}
-
-- LLMs are effective when *you* have a precise mental model of what you are building.
-
-- They handle volume.
-  You handle correctness and design decisions.
-
-::: {.narration}
-~200 agentic sessions.
-Human review at every step.
-:::
+{{< boom "Really!" colour=red bottom=20% right=2% rotate=-8 size=1.4em fragment=burst >}}
+{{< bam "v0.3.0" colour=yellow bottom=0% right=-2% rotate=10 size=1.3em fragment=pop >}}
 
 ## Under the Hood {.panel}
 
@@ -539,23 +540,17 @@ Human review at every step.
 lines, curves, shapes, coordinate transforms.
 
 **Gribouille** is the grammar layer on top:
-scales, stats, geoms, guides, themes — all in pure Typst.
+scales, stats, geoms, guides, themes, are all in pure Typst.
 
 No Rust extensions.
 No JavaScript.
-No native binaries beyond the Typst compiler itself.
-
-::: {.caption}
-If a geom ever needs raw `cetz` drawing power, it is one import away.
-:::
+No native binaries beyond the Typst compiler itself (_for now_).
 
 # Issue 06: Current State {.section}
 
-v0.2.1 is out.
+{{< boom "v0.3.0" colour=red top=60% right=18% rotate=-8 size=1.6em fragment=burst >}}
 
-{{< boom "v0.2.1" colour=red top=60% right=18% rotate=-8 size=1.6em fragment=burst >}}
-
-## What Ships in v0.2.1 {.panel}
+## What Ships {.panel}
 
 ::: {layout-ncol=2}
 
@@ -580,7 +575,7 @@ continuous, discrete, manual; colour (brewer, viridis, okabe-ito, gradient); siz
 ::: {.fragment .comic-pop data-fragment-index="4"}
 **More**
 
-Facets, `compose()`, coords, full accessibility guide, `labs()`, `guides()`, `annotate()`, stats ...
+Facets, `compose()`/`defer()`, coords, full accessibility guide, `labs()`, `guides()`, `annotate()`, stats ...
 :::
 
 :::
@@ -591,36 +586,29 @@ Facets, `compose()`, coords, full accessibility guide, `labs()`, `guides()`, `an
 
 ## Honest Limitations {.panel}
 
-::: {.callout-warning collapse="false" title="What is not there yet"}
+::: {.callout-warning collapse="false" title="What is not there (_yet_)"}
 
-- **Static output only.**
-  No interactive hover, zoom, or brush — Typst is a document compiler.
-- **Performance at scale.**
-  Plots with thousands of points increase Typst compile time.
-- **Font handling.**
-  Custom fonts require local installation; CDN fonts used by HTML slides do not transfer to compiled Typst blocks automatically.
-- **Not all ggplot2 extensions are ported.**
-  `geom-sf`, some position adjustments, and complex stat pipelines are still missing.
+- **Static output only.**  
+  Typst is a document compiler.
+- **Performance at scale.**  
+  Plots with thousands of points increase Typst compile time.  
+  (_not benchmarked yet_)
+- **Not all ggplot2 extensions are ported.**  
+  "maps" and complex stat pipelines are still missing.  
+  (_WASM modules are possible, but not yet implemented_)
 
-:::
-
-::: {.caption}
-See the GitHub issue tracker for the current list.
 :::
 
 ## Where to Help {.panel}
 
-Contributions and feedback are welcome:
+Feedbacks are welcome:
 
-- [New geoms and stats — especially spatial (`geom-sf`) and time-series.]{.fragment .comic-pop}
-- [Performance work — large datasets and caching.]{.fragment .comic-pop}
-- [More built-in themes and colour palettes.]{.fragment .comic-pop}
 - [Bug reports — the test suite is young; edge cases are still being found.]{.fragment .comic-pop}
-- [Documentation examples — worked examples in different domains.]{.fragment .comic-pop}
+- [Documentation examples — worked/real examples in different domains.]{.fragment .comic-pop}
 
 ::: {.caption .fragment}
-First-time contributors welcome.
-Adding a geom is a bounded, testable task.
+Gribouille is an unfunded spare-time project, and some parts of the API is still settling.  
+[Pull requests are not being accepted for now.]{.fragment style="text-decoration: underline;"}
 :::
 
 # Issue 07: Closing {.section}
@@ -630,7 +618,7 @@ To be continued...
 ## Links {.panel}
 
 ::: {.narration}
-Gribouille is a scribble today.
+Gribouille is a scribble today.  
 The grammar is stable enough to build on.
 :::
 
@@ -639,7 +627,7 @@ The grammar is stable enough to build on.
 - [**GitHub** — `github.com/mcanouil/gribouille`]{.fragment .comic-pop data-fragment-index="3"}
 - [**This talk** — `mcanouil.github.io/2026-ggplot2-extenders-gribouille`]{.fragment .comic-pop data-fragment-index="4"}
 
-{{< bam "v0.2.1" colour=yellow bottom=-15% right=25% rotate=12 size=2em fragment=burst index=4 >}}
+{{< bam "v0.3.0" colour=yellow bottom=-15% right=25% rotate=12 size=2em fragment=burst index=4 >}}
 
 ::: {.caption .fragment data-fragment-index="5"}
 Thank you.

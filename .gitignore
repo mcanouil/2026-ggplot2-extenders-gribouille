@@ -5,3 +5,5 @@
 /index_files/
 /index.html
 /assets/typst-render/
+
+**/*.quarto_ipynb
