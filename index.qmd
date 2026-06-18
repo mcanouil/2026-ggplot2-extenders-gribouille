@@ -197,6 +197,7 @@ Available on the Typst Universe registry \
 //| label: step1
 //| width: 14cm
 //| height: 9cm
+//| code-line-numbers: "2-3"
 //| alt: Empty plot frame with bill length on the x-axis and bill depth on the y-axis — the coordinate system is established before any layer is added.
 #plot(
   data: penguins,
