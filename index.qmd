@@ -623,9 +623,10 @@ The grammar is stable enough to build on.
 :::
 
 - [**Typst Universe** — `@preview/gribouille:0.2.1`]{.fragment .comic-pop data-fragment-index="1"}
-- [**Docs** — `m.canouil.dev/gribouille`]{.fragment .comic-pop data-fragment-index="2"}
-- [**GitHub** — `github.com/mcanouil/gribouille`]{.fragment .comic-pop data-fragment-index="3"}
-- [**This talk** — `mcanouil.github.io/2026-ggplot2-extenders-gribouille`]{.fragment .comic-pop data-fragment-index="4"}
+- [**Docs** — [`m.canouil.dev/gribouille`](https://m.canouil.dev/gribouille)]{.fragment .comic-pop data-fragment-index="2"}
+- [**GitHub** — [`github.com/mcanouil/gribouille`](https://github.com/mcanouil/gribouille)]{.fragment .comic-pop data-fragment-index="3"}
+- [**This talk** — [`mcanouil.github.io/2026-ggplot2-extenders-gribouille`](https://mcanouil.github.io/2026-ggplot2-extenders-gribouille)]{.fragment .comic-pop data-fragment-index="4"}
+- [**TidyTuesday** - [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)]
 
 {{< bam "v0.3.0" colour=yellow bottom=-15% right=25% rotate=12 size=2em fragment=burst index=4 >}}
 
