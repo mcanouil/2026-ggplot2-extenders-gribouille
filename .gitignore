@@ -4,6 +4,7 @@
 /.quarto/
 /index_files/
 /index.html
+/index.qmd.bak
 /assets/typst-render/
 
 **/*.quarto_ipynb

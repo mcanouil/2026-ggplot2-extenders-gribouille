@@ -1,4 +1,5 @@
-#import "@preview/gribouille:0.3.0": *
+// #import "@local/gribouille:0.0.0": *
+#import "@preview/gribouille:0.4.1": *
 // Comic-book theme helper — palette and style match the slide chrome.
 // theme-comic is re-wrapped below so its ink/paper inherit the document
 // foreground/background; its comic-red accent default is preserved.

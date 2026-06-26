@@ -807,12 +807,12 @@ $starburst-yellow: radial-gradient(circle, $comic-yellow 0%, $comic-yellow 30%, 
     color: $comic-ink;
     border: $thick-ink-border;
     border-radius: 32px;
-    padding: 0.8em 1.2em;
+    padding: 0.9em 1.8em;
     font-family: "Comic Neue", cursive;
     font-weight: 700;
     font-size: 1.3em;
     box-shadow: $panel-shadow;
-    max-width: 80%;
+    max-width: 60%;
     z-index: 1;
 
     &::after {
@@ -912,7 +912,10 @@ $starburst-yellow: radial-gradient(circle, $comic-yellow 0%, $comic-yellow 30%, 
       box-shadow: 4px 4px 0 $comic-ink;
     }
 
-    p, ul, ol, blockquote, pre, div.sourceCode {
+    // The paper chip backs plain prose only. Text that lives inside a themed
+    // component (caption, bubble, narration, callout) already has its own
+    // surface, so exclude those descendants.
+    :is(p, ul, ol, blockquote, pre, div.sourceCode):not(:is(.caption, .callout, [class*="bubble"]) *) {
       background: rgba(253, 246, 227, 0.92);
       padding: 0.3em 0.6em;
       border-radius: 4px;
@@ -920,6 +923,14 @@ $starburst-yellow: radial-gradient(circle, $comic-yellow 0%, $comic-yellow 30%, 
       max-width: 100%;
       box-sizing: border-box;
       transition: background-color 500ms ease-out;
+    }
+
+    // An image-only paragraph carries no text, so drop the paper chip and let
+    // the figure sit directly on the halftone background.
+    p:has(> img:only-child) {
+      width: auto;
+      background: transparent;
+      padding: 0;
     }
 
     // Hold the paper backdrop back until the fragment is revealed, so the
@@ -938,6 +949,14 @@ $starburst-yellow: radial-gradient(circle, $comic-yellow 0%, $comic-yellow 30%, 
   // so the inked card itself reads as halftoned paper.
   .slides section.panel.halftone::before {
     @include halftone-bg;
+  }
+
+  // .panel.halftone: the panel governs its own prose layout, so drop the
+  // halftone paper chip and let panel styling stand.
+  .slides section.panel.halftone :is(p, ul, ol, blockquote, pre, div.sourceCode) {
+    background: transparent;
+    padding: 0;
+    width: auto;
   }
 
   // .section.halftone: keep the starburst by layering it over halftone dots.
@@ -1560,14 +1579,16 @@ $starburst-yellow: radial-gradient(circle, $comic-yellow 0%, $comic-yellow 30%, 
 
   .slides .bubble-thought {
     position: relative;
-    display: inline-block;
+    display: block;
+    width: fit-content;
+    text-align: center;
     background: $comic-white;
     color: $comic-ink;
     border: $thick-ink-border;
     border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
-    padding: 0.9em 1.4em;
-    margin: 1em 0 2em 0;
-    max-width: 80%;
+    padding: 1em 1.8em;
+    margin: 1em auto 2em auto;
+    max-width: 60%;
     font-family: "Comic Neue", "Comic Sans MS", cursive;
     font-style: italic;
     font-weight: 700;
@@ -1602,12 +1623,14 @@ $starburst-yellow: radial-gradient(circle, $comic-yellow 0%, $comic-yellow 30%, 
   .slides .bubble-shout {
     position: relative;
     display: inline-block;
+    text-align: center;
     background: $comic-yellow;
     color: $comic-red;
     padding: 0.8em 1.6em;
     margin: 0.6em 0;
     max-width: 85%;
     font-family: "Bangers", "Impact", sans-serif;
+    font-weight: 700;
     text-transform: uppercase;
     font-size: 1.4em;
     letter-spacing: 0.04em;
@@ -1939,6 +1962,15 @@ $starburst-yellow: radial-gradient(circle, $comic-yellow 0%, $comic-yellow 30%, 
   // Pure CSS: keyed on the present cover slide so no JS toggle is needed.
   &:has(.slides section.title-slide.comic-cover.present) {
     .slide-logo,
+    .slide-menu-button,
+    .slide-number {
+      display: none !important;
+    }
+  }
+
+  // Hide the menu button and slide number on chapter section splashes; they
+  // reappear on every other slide. Keyed on the present .section slide.
+  &:has(.slides section.section.present) {
     .slide-menu-button,
     .slide-number {
       display: none !important;

@@ -20,6 +20,7 @@ engine: markdown
 filters:
   - typst-render
   - code-window
+  - cascade
 extensions:
   code-window:
     style: default
@@ -34,16 +35,21 @@ extensions:
     cache: false
 ---
 
-# Issue 01: The Problem {.section}
+# Issue 01: Origin Story {.section}
 
-Two runtimes, one document.
+Every hero starts with a problem nobody else will fix.
 
-## Two Worlds Apart {.panel}
+## The Dark Past {.panel}
 
-::: {.columns}
+- [Different fonts between prose and figure.]{.fragment fragment-index="1" .comic-pop}
+- [Different colour palettes: slide theme vs. plot theme.]{.fragment fragment-index="2" .comic-pop}
+- [Two render passes, document and figure compiled separately.]{.fragment fragment-index="3" .comic-pop}
+- [No shared layout, so figure margins are guesswork.]{.fragment fragment-index="4" .comic-pop}
+
+::: {.columns .fragment fragment-index="5"}
 ::: {.column width="50%"}
 
-**Typst + Gribouille**
+**Gribouille**
 
 ```{.typst style="font-size: 0.9em;"}
 #figure(
@@ -51,10 +57,6 @@ Two runtimes, one document.
   caption: [Figure 1.],
 )
 ```
-
-One compiler.
-One font system.
-Document and figure share the same layout.
 
 :::
 ::: {.column width="50%"}
@@ -70,127 +72,60 @@ ggsave("fig.svg")
 #image("fig.svg")
 ```
 
-Two font systems.
-Two colour palettes.
-Two render passes.
-
 :::
 :::
 
-::: {.narration}
-Every figure is a tourist in its own document.
+::: {.caption .fragment}
+The scars every figure carried, workflow after workflow.
 :::
 
-## The Friction {.panel}
+---
 
-Working around the mismatch:
-
-- [Different fonts between prose and figure.]{.fragment .comic-pop}
-- [Different colour palettes — slide theme vs. ggplot2 theme.]{.fragment .comic-pop}
-- [Two render passes — document and figure compiled separately.]{.fragment .comic-pop}
-- [No shared layout — figure margins are guesswork.]{.fragment .comic-pop}
-
-::: {.callout-warning .fragment collapse="false" title="The symptom"}
-You fixed the font in the figure.
-The document still uses a different one.
+::: {.shout .fragment}
+Never again.  
+What if one engine compiled the figure and the prose?
 :::
 
-# Issue 02: The Team {.section}
+## The Spark {.panel}
 
-Same grammar, different runtimes.
-
-## Grammar Travels {.panel}
-
-::: {layout-ncol=2}
-
-::: {.fragment .comic-pop data-fragment-index="1"}
-**ggplot2** `·` R
-
-The original.
-Wilkinson's grammar in idiomatic R.
+::: {.narration .fragment}
+Before the powers, the ordinary day job.
 :::
 
-::: {.fragment .comic-pop data-fragment-index="2"}
-**plotnine** `·` Python
+::: {.thought .fragment}
+With **Typst Render** I can render any Typst content straight into Quarto.
 
-A faithful port.
-The same `aes()` + layer vocabulary, now in Python.
+But, why do I still need to use R or Python to draw a plot?
 :::
 
-::: {.fragment .comic-pop data-fragment-index="3"}
-**ggsql** `·` SQL
+---
 
-Queries as layers.
-The grammar applied when the runtime is a database.
+- [I wanted a plot from a **CSV**: no kernel, no session, no heavy dependencies.]{.fragment fragment-index="1" .comic-pop}
+- [Typst was already compiling diagrams for me. Why not the plot too?]{.fragment fragment-index="2" .comic-pop}
+
+::: {.thought .fragment fragment-index="3"}
+[A grammar of graphics...]{.fragment fragment-index="3"} [inside a database?]{.fragment fragment-index="4"}
+
+[Why not inside a document compiler.]{.fragment fragment-index="5"}
 :::
 
-::: {.fragment .comic-pop data-fragment-index="4"}
-**Gribouille** `·` Typst
-
-Native compilation.
-The grammar runs inside the document engine itself.
+::: {.fragment fragment-index="4"}
+Last year, **ggsql** brought the grammar into SQL.
 :::
 
+::: {.caption .fragment}
+Gribouille was born of necessity, not ambition.
 :::
 
-{{< bam "R" colour=blue top=5% left=24% rotate=-10 size=1.2em fragment=pop index=1 >}}
-{{< bam "PY" colour=yellow top=6% right=8% rotate=8 size=1.2em fragment=pop index=2 >}}
-{{< bam "SQL" colour=red bottom=45% left=22% rotate=6 size=1.2em fragment=pop index=3 >}}
-{{< boom "TYPST" colour=blue bottom=45% right=6% rotate=-8 size=1.1em fragment=pop index=4 >}}
+# Issue 02: The Graphing API {.section}
 
-::: {.caption .fragment data-fragment-index="4"}
-The vocabulary is stable.
-
-The question is never "what should the API look like?"  
-— only "how do I wire it to a new backend?"
-:::
-
-## "How do I wire this grammar to a new rendering backend?" {.speech}
-
-::: {.fragment}
-::: {.thought}
-Wilkinson solved the hard problem already.
-:::
-
-The vocabulary is stable.
-The backend is just a backend.
-:::
-
-# Issue 03: Gribouille {.section}
-
-A native Typst package.
-
-## The Import {.panel}
-
-```typst
-#import "@preview/gribouille:0.2.1": *
-```
-
-::: {style="padding-top: 2em;"}
-:::
-
-::: {layout-ncol=2}
-
-::: {}
-- One line.
-
-- No R session.
-:::
-
-::: {}
-- No Python environment.
-
-- No recorded libraries.
-:::
-
-:::
-
-::: {.caption}
-Available on the Typst Universe registry \
-— the same channel as every other Typst package.
-:::
+Wilkinson's grammar, native to Typst.
 
 ## data + aes() {.panel}
+
+```typst
+#import "@preview/gribouille:0.4.1": *
+```
 
 ```{typst}
 //| echo: true
@@ -203,12 +138,18 @@ Available on the Typst Universe registry \
   data: penguins,
   mapping: aes(x: "bill-len", y: "bill-dep"),
   layers: (geom-blank(),),
-  labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)"),
+  labels: labels(x: "Bill Length (mm)", y: "Bill Depth (mm)"),
   theme: theme-comic(),
   width: auto,
   height: auto,
 )
 ```
+
+::: {.caption .fragment style="font-size: 0.9em;"}
+One line to import.
+No R session, no Python environment.  
+It is a Typst Universe package.
+:::
 
 ## + geom-point() {.panel}
 
@@ -226,14 +167,14 @@ layers: (geom-point(size: 2pt),),
   data: penguins,
   mapping: aes(x: "bill-len", y: "bill-dep"),
   layers: (geom-point(size: 2pt),),
-  labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)"),
+  labels: labels(x: "Bill Length (mm)", y: "Bill Depth (mm)"),
   theme: theme-comic(),
   width: auto,
   height: auto,
 )
 ```
 
-## + aes(colour = "species") {.panel}
+## + aes(fill = "species") {.panel}
 
 ```typst
 mapping: aes(x: "bill-len", y: "bill-dep", fill: "species"),
@@ -256,7 +197,7 @@ scales: (scale-fill-discrete(palette: comic-colours),),
       palette: comic-colours,
     ),
   ),
-  labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)", fill: "Species"),
+  labels: labels(x: "Bill Length (mm)", y: "Bill Depth (mm)", fill: "Species"),
   theme: theme-comic(),
   width: auto,
   height: auto,
@@ -287,7 +228,7 @@ facet: facet-wrap("species"),
     ),
   ),
   guides: guides(fill: none),
-  labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)"),
+  labels: labels(x: "Bill Length (mm)", y: "Bill Depth (mm)"),
   theme: theme-comic(),
   width: auto,
   height: auto,
@@ -301,7 +242,7 @@ compose(
   defer(plot, ...)),
   defer(plot, ...)),
   columns: 2,
-  labs: labs(title: comic-title("Palmer Penguins: Morphometrics")),
+  labels: labels(title: comic-title("Palmer Penguins: Morphometrics")),
   collect: ("fill",),
 )
 ```
@@ -318,7 +259,7 @@ compose(
     mapping: aes(x: x, y: y, fill: "species"),
     layers: (geom-point(size: 2pt, colour: black, stroke: 0.5pt),),
     scales: (scale-fill-discrete(limits: ("Adelie", "Chinstrap", "Gentoo"), palette: comic-colours,),),
-    labs: labs(x: xlab, y: ylab, fill: "Species"),
+    labels: labels(x: xlab, y: ylab, fill: "Species"),
     theme: theme-comic()
   )
 }
@@ -326,7 +267,7 @@ compose(
   my-plot("bill-len", "bill-dep", "Bill Length (mm)", "Bill Depth (mm)",),
   my-plot("flipper-len", "body-mass", "Flipper Length (mm)", "Body Mass (g)",),
   columns: 2,
-  labs: labs(title: comic-title("Palmer Penguins: Morphometrics")),
+  labels: labels(title: comic-title("Palmer Penguins: Morphometrics")),
   collect: ("fill",),
   width: auto,
   height: auto,
@@ -334,17 +275,19 @@ compose(
 ```
 
 ::: {.caption .fragment}
-Contrary to ggplot2/R, Typst does not have lazy evaluation, so we need a way to get the plot specification without immediately rendering it.
+Typst has no lazy evaluation, so `defer()` captures the plot spec without rendering it yet.
 :::
 
-## Full Typst Integration {.panel}
+## annotate("typst", ...) {.panel}
 
 ```typst
 annotate(
   "typst", ...,
-  label: [#box(fill: rgb("#fdf6e3"))[#text(size: 24pt)[_Typical_ Chinstrap]]]
+  label: [#box(inset: 8pt, fill: rgb("#ffd60a"), stroke: 2pt + rgb("#0b0b0b"))[_Typical_ Chinstrap]],
+  anchor: "west",
+  size: 14pt,
+  clip: false
 ),
-annotate("vline", xintercept: 45.0, colour: comic-red, stroke: 1pt),
 ```
 
 ```{typst}
@@ -358,14 +301,14 @@ annotate("vline", xintercept: 45.0, colour: comic-red, stroke: 1pt),
   mapping: aes(x: "bill-len", y: "bill-dep", fill: "species"),
   layers: (
     geom-point(size: 2pt, colour: black, stroke: 0.5pt),
-    annotate("vline", xintercept: 45.0, colour: comic-red, stroke: 1pt),
     annotate(
       "typst",
-      x: 35.0,
-      y: 14.0,
-      label: [#box(fill: rgb("#fdf6e3"))[#text(size: 24pt)[_Typical_ Chinstrap]]],
+      x: 50.0,
+      y: 13.5,
+      label: [#box(inset: 8pt, fill: rgb("#ffd60a"), stroke: 2pt + rgb("#0b0b0b"))[_Typical_ Chinstrap]],
       anchor: "west",
-      size: 8pt,
+      size: 14pt,
+      clip: false
     ),
   ),
   scales: (
@@ -374,247 +317,192 @@ annotate("vline", xintercept: 45.0, colour: comic-red, stroke: 1pt),
       palette: comic-colours,
     ),
   ),
-  labs: labs(x: "Bill Length (mm)", y: "Bill Depth (mm)", colour: "Species"),
+  labels: labels(x: "Bill Length (mm)", y: "Bill Depth (mm)", colour: "Species"),
   theme: theme-comic(),
   width: auto,
   height: auto,
 )
 ```
 
-::: {.caption .fragment}
-The figure is Typst content.
-
-[Annotate, caption, and cross-reference it like any other document element.]{.fragment}
+::: {.caption .fragment style="font-size: 0.9em;"}
+The annotation is native Typst content, nothing extra to use.
 :::
 
-# Issue 04: No Big Dependencies {.section}
+# Issue 03: Faithful, and Not {.section}
 
-Bring a CSV. Nothing else.
+Same grammar, different runtime.
 
-## Bring Your Own Data {.panel}
+## Adherence vs. Departure {.panel}
 
-```typst
-#let raw = csv("penguins.csv", row-type: dictionary)
-#let df = raw
-  .filter(r => r.at("bill_len") != "NA")
-  .map(r => (
-    species:    r.species,
-    "bill-len": float(r.at("bill_len")),
-    "bill-dep": float(r.at("bill_dep")),
-  ))
-#plot(data: df, ...)
-```
+::: {.columns}
+::: {.column width="50%"}
 
-```{typst}
-//| echo: false
-//| label: csv
-//| width: 14cm
-//| height: 9cm
-//| alt: "Scatter plot of bill length vs bill depth loaded from a CSV file and coloured by species — same result as the built-in penguins dataset."
-#let raw = csv("assets/data/penguins.csv", row-type: dictionary)
-#let df = (
-  raw
-  .filter(r => r.at("bill_len") != "NA" and r.at("bill_dep") != "NA")
-  .map(r => (
-    species:    r.species,
-    "bill-len": float(r.at("bill_len")),
-    "bill-dep": float(r.at("bill_dep")),
-  ))
-)
-#plot(
-  data: df,
-  mapping: aes(x: "bill-len", y: "bill-dep", fill: "species"),
-  layers: (geom-point(size: 2pt, colour: black, stroke: 0.5pt),),
-  scales: (
-    scale-fill-discrete(
-      limits: ("Adelie", "Chinstrap", "Gentoo"),
-      palette: comic-colours,
-    ),
-  ),
-  labs: labs(
-    x: "Bill Length (mm)",
-    y: "Bill Depth (mm)",
-    fill: "Species",
-    caption: "Source: penguins.csv",
-  ),
-  theme: theme-comic(),
-  width: auto,
-  height: auto,
-)
-```
+**Faithful to ggplot2**
 
-::: {.caption .fragment}
-No R. No Python. No recorded libraries.
+- [`aes()` mapping.]{.fragment .comic-pop}
+- [Layered `geom*` / `stat*`.]{.fragment .comic-pop}
+- [`scale*`, `facet*`, `coord*`.]{.fragment .comic-pop}
+- [`guides()`, `theme*`.]{.fragment .comic-pop}
+- [Layers stack in draw order.]{.fragment .comic-pop}
+
+:::
+::: {.column width="50%"}
+
+**Departs by necessity**
+
+- [kebab-case: `geom-point`, `stat-identity`.]{.fragment .comic-pop}
+- [No `+` operator: one `plot()` call with named args (`layers`, `scales`, `facet`).]{.fragment .comic-pop}
+- [Marker body is `fill`, outline is `colour`.]{.fragment .comic-pop}
+- [`labels()` not `labs()`; avoid abbreviations.]{.fragment .comic-pop}
+
+:::
 :::
 
-## The Quarto Pipeline {.panel}
+::: {.caption .fragment}
+The vocabulary is stable. The question was never "what should the API look like?" It was "how do I wire it to Typst?"
+:::
+
+## Payoff: One Engine {.panel}
 
 ::: {.narration}
-The same pipeline works in every Quarto format.
+The figure stops being a tourist.
 :::
 
-| Step           | What happens                                       |
-| -------------- | -------------------------------------------------- |
-| Quarto         | Reads `.qmd`, runs pre-Quarto filters.             |
-| `typst-render` | Compiles `{typst}` blocks to PNG or SVG.           |
-| Gribouille     | Runs inside the Typst compiler — no extra runtime. |
-| Output         | HTML, PDF, DOCX — choose your format.              |
+In a native Typst document, the figure inherits the document's font, foreground, and background.  
+Switch your document theme and the figures follow.
 
-::: {.callout-tip collapse="false" title="Bonus"}
-The Typst compiler is a single fast binary.  
-No package managers, no virtual environments, no version conflicts.
+::: {.callout-tip collapse="false" title="The integration an SVG import can never close"}
+Figure and prose are compiled by the **same engine**, in one pass.  
+Annotate, caption, and cross-reference the plot like any other element.
 :::
 
-## Typographic Integration {.panel}
+## {.explosion}
 
-In a native Typst document, `typst-render` injects the document's foreground and background colours into every compiled block.
+Same Engine!
 
-Figure axis text inherits the document font at document size.  
-The figure and the prose are compiled by the same engine.
+{{< boom "Typst" colour=red bottom=20% right=2% rotate=-8 size=1.4em fragment=burst >}}
 
-::: {.callout-note collapse="false" title="In practice"}
-Switch your document font.  
-Switch your document colour scheme.  
-Your figures follow automatically.
-:::
+# Issue 04: Built With AI, 2026 {.section}
 
-::: {.caption}
-This is the integration gap that an SVG import can never close.
-:::
-
-# Issue 05: Origin Story {.section}
-
-The extension came first.
-
-## The First Piece {.panel}
-
-**`quarto-typst-render`** came before Gribouille.
-
-It proved that a `{typst}` code block inside a Quarto document could compile to an image and land in any output format.
-
-That proof of concept opened the question: what if the figures *were* Typst, not just Typst-compiled images of something else?
-
-::: {.caption}
-Gribouille is the answer.
-`quarto-typst-render` is the delivery mechanism.
-:::
+Porting a grammar with agentic tools.
 
 ## Timeline {.panel}
 
 ::: {.narration}
-One month planning/investigating.  
-One month coding (*ground initial work*).  
-Followed by ~200 agentic sessions.
+Manual first. AI later, once it was safe to.
 :::
 
 ::: {.columns style="font-size: 0.85em;"}
 ::: {.column}
 
-**March 2026: Planning**
+**Plan, then hand-build**
 
-- Grammar design decisions.
-- Theme API specification.
-- Geom and stat priority list.
+- Grammar and theme API design.
 - `cetz` as the drawing layer.
+- Core written and reviewed by hand.
+- Tests, snapshots, docs, until the architecture was safe to automate on.
 
 :::
 ::: {.column}
 
-**May 2026: Shipping**
+**Then accelerate**
 
-- LLM-assisted architecture.
-- ~200 agentic coding sessions.
-- Human review at every commit.
-- v0.1.0 released: May 20.
-- v0.2.0 released: June 1.
-- v0.3.0 released: June 24.
+- LLMs with proper guardrails.
+- Heavy Human review.
+- v0.1.0: May 20.
+- v0.3.0: June 14.
+- v0.4.0: June 22.
+- v0.4.1: June 23 (current).
 
 :::
 :::
 
-{{< boom "Really!" colour=red bottom=20% right=2% rotate=-8 size=1.4em fragment=burst >}}
-{{< bam "v0.3.0" colour=yellow bottom=0% right=-2% rotate=10 size=1.3em fragment=pop >}}
+{{< boom "Really!" colour=red bottom=35% right=2% rotate=-8 size=1.4em fragment=burst >}}
+{{< bam "v0.4.1" colour=yellow bottom=10% right=15% rotate=10 size=1.3em fragment=pop >}}
 
-## Under the Hood {.panel}
+## Earn the Right to Automate {.panel}
 
-**`cetz`** provides the low-level drawing primitives:
-lines, curves, shapes, coordinate transforms.
+::: {layout-ncol=3}
 
-**Gribouille** is the grammar layer on top:
-scales, stats, geoms, guides, themes, are all in pure Typst.
+::: {.fragment .comic-pop fragment-index="1"}
+**1. Hand-build**
 
-No Rust extensions.
-No JavaScript.
-No native binaries beyond the Typst compiler itself (_for now_).
-
-# Issue 06: Current State {.section}
-
-{{< boom "v0.3.0" colour=red top=60% right=18% rotate=-8 size=1.6em fragment=burst >}}
-
-## What Ships {.panel}
-
-::: {layout-ncol=2}
-
-::: {.fragment .comic-pop data-fragment-index="1"}
-**Geoms**
-
-`geom-point`, `geom-line`, `geom-bar`, `geom-col`, `geom-area`, `geom-boxplot`, `geom-violin`, `geom-histogram`, `geom-contour`, `geom-hex`, `geom-tile`, `geom-text`, `geom-smooth`, `geom-rug` ...
+Core grammar coded, edited, and reviewed manually.
+No AI on an unstable foundation.
 :::
 
-::: {.fragment .comic-pop data-fragment-index="2"}
-**Scales**
+::: {.fragment .comic-pop fragment-index="2"}
+**2. Harden**
 
-continuous, discrete, manual; colour (brewer, viridis, okabe-ito, gradient); size, alpha, shape, linetype ...
+Tests, snapshots, documentation: the guardrails that make change safe.
 :::
 
-::: {.fragment .comic-pop data-fragment-index="3"}
-**Themes**
+::: {.fragment .comic-pop fragment-index="3"}
+**3. Accelerate**
 
-`theme-grey`, `theme-minimal`, `theme-classic`, `theme-bw`, `theme-void`, `theme-linedraw`, `theme-light`, `theme-dark`
-:::
-
-::: {.fragment .comic-pop data-fragment-index="4"}
-**More**
-
-Facets, `compose()`/`defer()`, coords, full accessibility guide, `labs()`, `guides()`, `annotate()`, stats ...
+Only then bring in LLMs, to speed up well-bounded work.
 :::
 
 :::
 
-{{< bam "20+" colour=red top=2% left=20% rotate=-8 size=1.5em fragment=pop index=1 >}}
-{{< bam "30+" colour=blue top=2% right=10% rotate=6 size=1.5em fragment=pop index=2 >}}
-{{< boom "8" colour=yellow bottom=-25% left=38% rotate=-6 fragment=pop index=3 >}}
+::: {.callout-note .fragment collapse="false" title="What carried, what didn't"}
+Stable vocabulary ported cleanly, a good LLM target.  
+AI stumbled on Typst's no-lazy-eval model, `cetz` primitives, and scale/stat edge cases.  
+Human review caught it.
+:::
 
-## Honest Limitations {.panel}
+{{< bam "manual" colour=blue top=-4%% left=19% rotate=-8 size=1.1em fragment=pop index=1 >}}
+{{< boom "guardrails" colour=red top=-10% right=-5% rotate=6 size=1.1em fragment=pop index=3 >}}
 
-::: {.callout-warning collapse="false" title="What is not there (_yet_)"}
+# Issue 05: Where It Stands {.section}
 
-- **Static output only.**  
-  Typst is a document compiler.
-- **Performance at scale.**  
-  Plots with thousands of points increase Typst compile time.  
-  (_not benchmarked yet_)
-- **Not all ggplot2 extensions are ported.**  
-  "maps" and complex stat pipelines are still missing.  
-  (_WASM modules are possible, but not yet implemented_)
+{{< boom "v0.4.1" colour=red top=60% right=18% rotate=-8 size=1.6em fragment=burst >}}
 
+## Rising Out of the Shadows {.halftone data-comic-fit="false"}
+
+```{typst}
+//| echo: false
+//| width: 16cm
+//| height: 18cm
+//| file: "assets/star-history/star-history.typ"
+//| output-filename: "star-history.svg"
+//| alt: "Midnight-sky line chart of Gribouille's cumulative GitHub stars per day from April to June 2026, titled 'Gribouille, a Rising Star'. A luminous gold step trail rises from zero across a long flat run labelled 'Quietly built in private', lifts at a gold dashed marker labelled 'Made public 17th of May', then climbs through dashed release markers to a final amber spike annotated with a one-day jump."
+```
+
+## What Ships, What Doesn't {.panel}
+
+::: {.columns}
+::: {.column width="55%"}
+
+- [**Geoms:** point, line, bar, col, area, boxplot, ribbon, histogram, contour, hex, tile, text, smooth, rug ...]{.fragment .comic-pop}
+- [**Scales:** continuous, discrete, manual; brewer, viridis, okabe-ito, gradient; size, alpha, shape ...]{.fragment .comic-pop}
+- [**Themes:** grey, minimal, classic, bw, void, linedraw, light, dark.]{.fragment .comic-pop}
+
+:::
+::: {.column width="45%"}
+
+::: {.callout-warning .fragment collapse="false" title="Not there (_yet_)"}
+
+- **Static output only.**
+- **Performance at scale** not benchmarked.
+- **Not all geoms/stats ported:** maps and complex stat pipelines (WASM possible).
+
+:::
+
+:::
 :::
 
 ## Where to Help {.panel}
 
 Feedbacks are welcome:
 
-- [Bug reports — the test suite is young; edge cases are still being found.]{.fragment .comic-pop}
-- [Documentation examples — worked/real examples in different domains.]{.fragment .comic-pop}
+- [Bug reports: the test suite is young, edge cases are still being found as I use Gribouille, *e.g.*, [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)]{.fragment .comic-pop}
+- [Documentation examples: a lot of dummy examples, but a few "real" examples.]{.fragment .comic-pop}
 
 ::: {.caption .fragment}
-Gribouille is an unfunded spare-time project, and some parts of the API is still settling.  
-[Pull requests are not being accepted for now.]{.fragment style="text-decoration: underline;"}
+Gribouille is an unfunded spare-time project, and parts of the API are still settling.  
+[Pull requests are not being accepted for now.]{style="text-decoration: underline;"}
 :::
-
-# Issue 07: Closing {.section}
-
-To be continued...
 
 ## Links {.panel}
 
@@ -623,14 +511,14 @@ Gribouille is a scribble today.
 The grammar is stable enough to build on.
 :::
 
-- [**Typst Universe** — `@preview/gribouille:0.2.1`]{.fragment .comic-pop data-fragment-index="1"}
-- [**Docs** — [`m.canouil.dev/gribouille`](https://m.canouil.dev/gribouille)]{.fragment .comic-pop data-fragment-index="2"}
-- [**GitHub** — [`github.com/mcanouil/gribouille`](https://github.com/mcanouil/gribouille)]{.fragment .comic-pop data-fragment-index="3"}
-- [**This talk** — [`mcanouil.github.io/2026-ggplot2-extenders-gribouille`](https://mcanouil.github.io/2026-ggplot2-extenders-gribouille)]{.fragment .comic-pop data-fragment-index="4"}
-- [**TidyTuesday** - [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)]
+- [**Typst Universe** — `@preview/gribouille:0.4.1`]{.fragment .comic-pop fragment-index="1"}
+- [**Docs** — [`m.canouil.dev/gribouille`](https://m.canouil.dev/gribouille)]{.fragment .comic-pop fragment-index="3"}
+- [**GitHub** — [`github.com/mcanouil/gribouille`](https://github.com/mcanouil/gribouille)]{.fragment .comic-pop fragment-index="4"}
+- [**This talk** — [`https://m.canouil.dev/2026-ggplot2-extenders-gribouille/`](https://m.canouil.dev/2026-ggplot2-extenders-gribouille/)]{.fragment .comic-pop fragment-index="5"}
+- [**TidyTuesday** — [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)]{.fragment .comic-pop fragment-index="6"}
 
-{{< bam "v0.3.0" colour=yellow bottom=-15% right=25% rotate=12 size=2em fragment=burst index=4 >}}
+{{< bam "v0.4.1" colour=yellow bottom=-15% right=25% rotate=12 size=2em fragment=burst index=1 >}}
 
-::: {.caption .fragment data-fragment-index="5"}
+::: {.caption .fragment fragment-index="7"}
 Thank you.
 :::
