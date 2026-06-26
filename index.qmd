@@ -458,7 +458,7 @@ Human review caught it.
 
 {{< boom "v0.4.1" colour=red top=60% right=18% rotate=-8 size=1.6em fragment=burst >}}
 
-## Rising Out of the Shadows {data-comic-fit="false" background-color="#0a132e"}
+## Rising Out of the Shadows {.halftone data-comic-fit="false" background-color="#0a132e"}
 
 ```{typst}
 //| echo: false
