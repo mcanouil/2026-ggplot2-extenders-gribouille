@@ -82,8 +82,7 @@ The scars every figure carried, workflow after workflow.
 ---
 
 ::: {.shout .fragment}
-Never again.  
-What if one engine compiled the figure and the prose?
+Never again.
 :::
 
 ## The Spark {.panel}
@@ -96,6 +95,8 @@ Before the powers, the ordinary day job.
 With **Typst Render** I can render any Typst content straight into Quarto.
 
 But, why do I still need to use R or Python to draw a plot?
+
+What if one engine compiled the figure and the prose?
 :::
 
 ---
@@ -325,7 +326,7 @@ annotate(
 ```
 
 ::: {.caption .fragment style="font-size: 0.9em;"}
-The annotation is native Typst content, nothing extra to use.
+Pure Typst content — no new API needed.
 :::
 
 # Issue 03: Faithful, and Not {.section}
@@ -362,17 +363,40 @@ Same grammar, different runtime.
 The vocabulary is stable. The question was never "what should the API look like?" It was "how do I wire it to Typst?"
 :::
 
+## The Pipeline {.panel}
+
+::: {.narration}
+The departures are not arbitrary.
+They reflect how Typst works.
+:::
+
+- [Typst has no objects.
+  Every construct — `plot()`, `aes()`, `geom-*`, `scale-*` — builds a **spec dict**.]{.fragment .comic-pop}
+- [`render.typ` walks a fixed pipeline:]{.fragment .comic-pop}
+
+::: {.fragment}
+`data → stat → position → scale → coord → facet → theme → render`
+:::
+
+::: {.fragment .comic-pop}
+Each stage receives dicts, transforms them, passes dicts forward.
+The final stage emits a **CeTZ canvas**.
+:::
+
+::: {.caption .fragment}
+Spec-dict construction + pipeline transformation + CeTZ emission —
+not just "dictionary validation", which is only one slice (`src/utils/errors.typ`).
+:::
+
 ## Payoff: One Engine {.panel}
 
 ::: {.narration}
 The figure stops being a tourist.
 :::
 
-In a native Typst document, the figure inherits the document's font, foreground, and background.  
-Switch your document theme and the figures follow.
-
 ::: {.callout-tip collapse="false" title="The integration an SVG import can never close"}
-Figure and prose are compiled by the **same engine**, in one pass.  
+Figure and prose are compiled by the **same engine**, in one pass.
+Switch the document theme and the figures follow.
 Annotate, caption, and cross-reference the plot like any other element.
 :::
 
@@ -494,7 +518,7 @@ Human review caught it.
 
 ## Where to Help {.panel}
 
-Feedbacks are welcome:
+Feedback is welcome:
 
 - [Bug reports: the test suite is young, edge cases are still being found as I use Gribouille, *e.g.*, [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)]{.fragment .comic-pop}
 - [Documentation examples: a lot of dummy examples, but a few "real" examples.]{.fragment .comic-pop}
