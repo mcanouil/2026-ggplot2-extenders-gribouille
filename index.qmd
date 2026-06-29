@@ -41,12 +41,16 @@ Every hero starts with a problem nobody else will fix.
 
 ## The Dark Past {.panel}
 
-- [Different fonts between prose and figure.]{.fragment fragment-index="1" .comic-pop}
-- [Different colour palettes: slide theme vs. plot theme.]{.fragment fragment-index="2" .comic-pop}
-- [Two render passes, document and figure compiled separately.]{.fragment fragment-index="3" .comic-pop}
-- [No shared layout, so figure margins are guesswork.]{.fragment fragment-index="4" .comic-pop}
+::: {.fragment}
 
-::: {.columns .fragment fragment-index="5"}
+- Different fonts between prose and figure.
+- Different colour palettes: slide theme vs. plot theme.
+- Two render passes, document and figure compiled separately.
+- No shared layout, so figure margins are guesswork.
+
+:::
+
+::: {.columns .fragment}
 ::: {.column width="50%"}
 
 **Gribouille**
@@ -79,12 +83,6 @@ ggsave("fig.svg")
 The scars every figure carried, workflow after workflow.
 :::
 
----
-
-::: {.shout .fragment}
-Never again.
-:::
-
 ## The Spark {.panel}
 
 ::: {.narration .fragment}
@@ -101,20 +99,24 @@ What if one engine compiled the figure and the prose?
 
 ---
 
-- [I wanted a plot from a **CSV**: no kernel, no session, no heavy dependencies.]{.fragment fragment-index="1" .comic-pop}
-- [Typst was already compiling diagrams for me. Why not the plot too?]{.fragment fragment-index="2" .comic-pop}
+::: {.fragment fragment-index="1"}
 
-::: {.thought .fragment fragment-index="3"}
-[A grammar of graphics...]{.fragment fragment-index="3"} [inside a database?]{.fragment fragment-index="4"}
+- I wanted a plot from a **CSV**: no kernel, no session, no heavy dependencies.
+- Typst was already compiling diagrams for me. Why not the plot too?
 
-[Why not inside a document compiler.]{.fragment fragment-index="5"}
 :::
 
-::: {.fragment fragment-index="4"}
+::: {.thought .fragment fragment-index="2"}
+[A grammar of graphics...]{.fragment fragment-index="2"} [inside a database?]{.fragment fragment-index="3"}
+
+[Why not inside a document compiler.]{.fragment fragment-index="4"}
+:::
+
+::: {.fragment fragment-index="3"}
 Last year, **ggsql** brought the grammar into SQL.
 :::
 
-::: {.caption .fragment}
+::: {.caption .fragment  fragment-index="5"}
 Gribouille was born of necessity, not ambition.
 :::
 
@@ -336,25 +338,27 @@ Same grammar, different runtime.
 ## Adherence vs. Departure {.panel}
 
 ::: {.columns}
-::: {.column width="50%"}
+::: {.column .fragment width="50%"}
 
 **Faithful to ggplot2**
 
-- [`aes()` mapping.]{.fragment .comic-pop}
-- [Layered `geom*` / `stat*`.]{.fragment .comic-pop}
-- [`scale*`, `facet*`, `coord*`.]{.fragment .comic-pop}
-- [`guides()`, `theme*`.]{.fragment .comic-pop}
-- [Layers stack in draw order.]{.fragment .comic-pop}
+- `aes()` mapping.
+- Layered `geom*` / `stat*`.
+- `scale*`, `facet*`, `coord*`.
+- `guides()`, `theme*`.
+- Layers stack in draw order.
 
 :::
-::: {.column width="50%"}
+::: {.column .fragment width="50%"}
 
 **Departs by necessity**
 
-- [kebab-case: `geom-point`, `stat-identity`.]{.fragment .comic-pop}
-- [No `+` operator: one `plot()` call with named args (`layers`, `scales`, `facet`).]{.fragment .comic-pop}
-- [Marker body is `fill`, outline is `colour`.]{.fragment .comic-pop}
-- [`labels()` not `labs()`; avoid abbreviations.]{.fragment .comic-pop}
+- kebab-case: `geom-point`, `stat-identity`.
+- No `+` operator: one `plot()` call with named args (`layers`, `scales`, `facet`).
+- Marker body is `fill`, outline is `colour`.
+- `labels()` not `labs()`; avoid abbreviations.
+
+{{< bam "ish" colour=blue bottom=47% right=40% rotate=8 size=1.4em fragment=pop >}}
 
 :::
 :::
@@ -370,22 +374,45 @@ The departures are not arbitrary.
 They reflect how Typst works.
 :::
 
-- [Typst has no objects.
-  Every construct — `plot()`, `aes()`, `geom-*`, `scale-*` — builds a **spec dict**.]{.fragment .comic-pop}
-- [`render.typ` walks a fixed pipeline:]{.fragment .comic-pop}
+::: {.fragment fragment-index="1"}
 
-::: {.fragment}
-`data → stat → position → scale → coord → facet → theme → render`
+- Typst has no objects.
+  Every construct — `plot()`, `aes()`, `geom-*`, `scale-*` — builds a **spec dict**.
+- `render.typ` walks a fixed pipeline:
+
+```{typst}
+//| echo: false
+//| label: pipeline
+//| width: 20cm
+//| height: 2cm
+//| alt: "Pipeline diagram: eight yellow boxes labelled data, stat, position, scale, coord, facet, theme, render, connected left-to-right by arrows."
+#let fg = if _typst_render_foreground != none { _typst_render_foreground } else { comic-ink }
+#let stages = ("data", "stat", "position", "scale", "coord", "facet", "theme", "render")
+#let stage(name) = box(
+  inset: (x: 7pt, y: 5pt),
+  stroke: 2pt + fg,
+  fill: comic-yellow,
+  radius: 2pt,
+)[#text(font: "Bangers", size: 13pt, fill: fg)[#name]]
+#let arr = box(inset: (x: 5pt))[#text(fill: fg, size: 13pt)[→]]
+#let cells = {
+  let c = ()
+  for (i, s) in stages.enumerate() {
+    c.push(stage(s))
+    if i < stages.len() - 1 { c.push(arr) }
+  }
+  c
+}
+#align(center + horizon)[
+  #grid(columns: cells.len(), align: center + horizon, ..cells)
+]
+```
+
 :::
 
-::: {.fragment .comic-pop}
+::: {.caption .fragment fragment-index="1"}
 Each stage receives dicts, transforms them, passes dicts forward.
 The final stage emits a **CeTZ canvas**.
-:::
-
-::: {.caption .fragment}
-Spec-dict construction + pipeline transformation + CeTZ emission —
-not just "dictionary validation", which is only one slice (`src/utils/errors.typ`).
 :::
 
 ## Payoff: One Engine {.panel}
@@ -434,6 +461,7 @@ Manual first. AI later, once it was safe to.
 - LLMs with proper guardrails.
 - Heavy Human review.
 - v0.1.0: May 20.
+- v0.2.0: June 1.
 - v0.3.0: June 14.
 - v0.4.0: June 22.
 - v0.4.1: June 23 (current).
@@ -442,7 +470,7 @@ Manual first. AI later, once it was safe to.
 :::
 
 {{< boom "Really!" colour=red bottom=35% right=2% rotate=-8 size=1.4em fragment=burst >}}
-{{< bam "v0.4.1" colour=yellow bottom=10% right=15% rotate=10 size=1.3em fragment=pop >}}
+{{< bam "v0.4.1" colour=yellow bottom=8% right=10% rotate=10 size=1.3em fragment=pop >}}
 
 ## Earn the Right to Automate {.panel}
 
@@ -496,16 +524,16 @@ Human review caught it.
 ## What Ships, What Doesn't {.panel}
 
 ::: {.columns}
-::: {.column width="55%"}
+::: {.column .fragment width="55%"}
 
-- [**Geoms:** point, line, bar, col, area, boxplot, ribbon, histogram, contour, hex, tile, text, smooth, rug ...]{.fragment .comic-pop}
-- [**Scales:** continuous, discrete, manual; brewer, viridis, okabe-ito, gradient; size, alpha, shape ...]{.fragment .comic-pop}
-- [**Themes:** grey, minimal, classic, bw, void, linedraw, light, dark.]{.fragment .comic-pop}
+- **Geoms:** point, line, bar, col, area, boxplot, ribbon, histogram, contour, hex, tile, text, smooth, rug ...
+- **Scales:** continuous, discrete, manual; brewer, viridis, okabe-ito, gradient; size, alpha, shape ...
+- **Themes:** grey, minimal, classic, bw, void, linedraw, light, dark.
 
 :::
-::: {.column width="45%"}
+::: {.column .fragment width="45%"}
 
-::: {.callout-warning .fragment collapse="false" title="Not there (_yet_)"}
+::: {.callout-warning collapse="false" title="Not there (_yet_)"}
 
 - **Static output only.**
 - **Performance at scale** not benchmarked.
@@ -518,10 +546,14 @@ Human review caught it.
 
 ## Where to Help {.panel}
 
+::: {.fragment}
+
 Feedback is welcome:
 
-- [Bug reports: the test suite is young, edge cases are still being found as I use Gribouille, *e.g.*, [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)]{.fragment .comic-pop}
-- [Documentation examples: a lot of dummy examples, but a few "real" examples.]{.fragment .comic-pop}
+- Bug reports: the test suite is young, edge cases are still being found as I use Gribouille, *e.g.*, [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)
+- Documentation examples: a lot of dummy examples, but a few "real" examples.
+
+:::
 
 ::: {.caption .fragment}
 Gribouille is an unfunded spare-time project, and parts of the API are still settling.  
@@ -536,13 +568,13 @@ The grammar is stable enough to build on.
 :::
 
 - [**Typst Universe** — `@preview/gribouille:0.4.1`]{.fragment .comic-pop fragment-index="1"}
-- [**Docs** — [`m.canouil.dev/gribouille`](https://m.canouil.dev/gribouille)]{.fragment .comic-pop fragment-index="3"}
-- [**GitHub** — [`github.com/mcanouil/gribouille`](https://github.com/mcanouil/gribouille)]{.fragment .comic-pop fragment-index="4"}
-- [**This talk** — [`https://m.canouil.dev/2026-ggplot2-extenders-gribouille/`](https://m.canouil.dev/2026-ggplot2-extenders-gribouille/)]{.fragment .comic-pop fragment-index="5"}
-- [**TidyTuesday** — [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)]{.fragment .comic-pop fragment-index="6"}
+- [**Docs** — [`m.canouil.dev/gribouille`](https://m.canouil.dev/gribouille)]{.fragment .comic-pop fragment-index="2"}
+- [**GitHub** — [`github.com/mcanouil/gribouille`](https://github.com/mcanouil/gribouille)]{.fragment .comic-pop fragment-index="2"}
+- [**This talk** — [`https://m.canouil.dev/2026-ggplot2-extenders-gribouille/`](https://m.canouil.dev/2026-ggplot2-extenders-gribouille/)]{.fragment .comic-pop fragment-index="2"}
+- [**TidyTuesday** — [`m.canouil.dev/tidytuesday`](https://m.canouil.dev/tidytuesday/)]{.fragment .comic-pop fragment-index="2"}
 
 {{< bam "v0.4.1" colour=yellow bottom=-15% right=25% rotate=12 size=2em fragment=burst index=1 >}}
 
-::: {.caption .fragment fragment-index="7"}
+::: {.caption .fragment fragment-index="3"}
 Thank you.
 :::
