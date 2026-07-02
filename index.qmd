@@ -12,6 +12,8 @@ date: 2026-06-30
 logo: assets/images/logo-stacked.svg
 format:
   comic-revealjs:
+    include-in-header:
+      - assets/social-card/header.html
     theme:
       - ./assets/stylesheets/custom.scss
     revealjs-plugins:
