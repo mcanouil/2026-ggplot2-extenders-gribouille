@@ -41,10 +41,6 @@ extensions:
 
 Every hero starts with a problem nobody else will fix.
 
-::: {style="display: none;" aria-hidden="true"}
-![](.github/template.png){fig-alt=""}
-:::
-
 ## The Dark Past {.panel}
 
 ::: {.fragment}
