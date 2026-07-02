@@ -42,7 +42,7 @@ extensions:
 Every hero starts with a problem nobody else will fix.
 
 ::: {style="display: none;" aria-hidden="true"}
-![](assets/social-card/2026-ggplot2-extenders-gribouille.png){fig-alt=""}
+![](.github/template.png){fig-alt=""}
 :::
 
 ## The Dark Past {.panel}
