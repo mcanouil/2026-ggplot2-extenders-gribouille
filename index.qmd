@@ -12,8 +12,6 @@ date: 2026-06-30
 logo: assets/images/logo-stacked.svg
 format:
   comic-revealjs:
-    include-in-header:
-      - assets/social-card/header.html
     theme:
       - ./assets/stylesheets/custom.scss
     revealjs-plugins:
@@ -23,7 +21,15 @@ filters:
   - typst-render
   - code-window
   - cascade
+  - social
 extensions:
+  social:
+    description: "A talk for the ggplot2 extenders club on Gribouille, a native Typst grammar-of-graphics package."
+    site-name: "The Grammar of Graphics Assembles - ggplot2 Extenders Club"
+    image: "https://raw.githubusercontent.com/mcanouil/2026-ggplot2-extenders-gribouille/refs/heads/main/.github/template.png"
+    image-width: "1280"
+    image-height: "640"
+    image-alt: "Comic-book title card reading 'The Grammar of Graphics Assembles — R, Python, SQL... and Now Typst', by Mickaël Canouil, Ph.D., dated 2026-06-30."
   code-window:
     style: default
   typst-render:
